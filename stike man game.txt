@@ -80,3 +80,24 @@ function death(){ alert("You died!"); player.style.left="100px"; enemy.style.lef
 
 </body>
 </html>
+
+<div id="player" class="stickman">
+  <div class="head"></div>
+  <div class="body"></div>
+  <div class="arm-left"></div>
+  <div class="arm-right"></div>
+  <div class="leg-left"></div>
+  <div class="leg-right"></div>
+</div>
+
+<style>
+.stickman { position:absolute; bottom:0; width:40px; height:80px; }
+.head { width:15px; height:15px; background:white; border-radius:50%; margin:auto; }
+.body { width:2px; height:40px; background:white; margin:0 auto; }
+.arm-left, .arm-right { width:15px; height:2px; background:white; position:absolute; top:15px; }
+.arm-left { left:-15px; transform:rotate(45deg); }
+.arm-right { right:-15px; transform:rotate(-45deg); }
+.leg-left, .leg-right { width:15px; height:2px; background:white; position:absolute; bottom:0; }
+.leg-left { left:-5px; transform:rotate(30deg); }
+.leg-right { right:-5px; transform:rotate(-30deg); }
+</style>
