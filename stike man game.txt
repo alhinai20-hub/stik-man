@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Stickman Fight</title>
+<style>
+body { margin:0; background:#111; font-family:Arial; color:white; overflow:hidden; }
+#gameArea { width:100vw; height:80vh; background:#222; position:relative; border-bottom:3px solid #444; }
+.stickman { width:40px; height:80px; background:white; position:absolute; bottom:0; transition:0.1s; }
+.enemy { width:40px; height:80px; background:red; position:absolute; bottom:0; }
+button { margin:5px; padding:10px 20px; font-size:18px; }
+#ui { padding:10px; background:#000; }
+.menu { display:none; background:rgba(0,0,0,0.9); position:absolute; top:0; left:0; width:100vw; height:100vh; padding:20px; }
+.panelTitle { font-size:26px; margin-bottom:10px; }
+.shopItem { background:#333; padding:10px; margin:5px 0; border-radius:6px; }
+</style>
+</head>
+<body>
+
+<div id="gameArea">
+  <div id="player" class="stickman"></div>
+  <div id="enemy" class="enemy"></div>
+</div>
+
+<div id="ui">
+  Coins: <span id="coinsText">0</span>
+  <button onclick="openShop()">Shop</button>
+  <button onclick="openAdminPrompt()">Admin</button>
+</div>
+
+<div id="shopMenu" class="menu">
+  <div class="panelTitle">SHOP</div>
+  <h3>Skins</h3>
+  <div class="shopItem">Ninja Skin — 50 coins <button onclick="buySkin('ninja',50)">Buy</button></div>
+  <div class="shopItem">Golden Skin — 150 coins <button onclick="buySkin('gold',150)">Buy</button></div>
+  <h3>Weapons</h3>
+  <div class="shopItem">Sword — 100 coins <button onclick="buyWeapon('sword',100)">Buy</button></div>
+  <div class="shopItem">Axe — 200 coins <button onclick="buyWeapon('axe',200)">Buy</button></div>
+  <h3>Powers</h3>
+  <div class="shopItem">Speed Boost — 80 coins <button onclick="buyPower('speed',80)">Buy</button></div>
+  <div class="shopItem">Double Damage — 120 coins <button onclick="buyPower('damage',120)">Buy</button></div>
+  <br><button onclick="closeShop()">Close</button>
+</div>
+
+<div id="adminMenu" class="menu">
+  <div class="panelTitle">ADMIN PANEL</div>
+  <div class="shopItem">Add 100 Coins <button onclick="addCoins(100)">+</button></div>
+  <div class="shopItem">Add 1000 Coins <button onclick="addCoins(1000)">+</button></div>
+  <div class="shopItem">Unlock ALL Skins <button onclick="unlockAllSkins()">Unlock</button></div>
+  <div class="shopItem">Unlock ALL Weapons & Powers <button onclick="unlockAllItems()">Unlock</button></div>
+  <br><br><button onclick="closeAdmin()">Close</button>
+</div>
+
+<script>
+let save = JSON.parse(localStorage.getItem("stickmanSave")||"{}");
+if(!save.coins) save.coins=0;
+if(!save.skins) save.skins=[];
+if(!save.weapons) save.weapons=[];
+if(!save.powers) save.powers=[];
+function saveGame(){ localStorage.setItem("stickmanSave",JSON.stringify(save)); }
+document.getElementById("coinsText").textContent=save.coins;
+function openShop(){document.getElementById("shopMenu").style.display="block";}
+function closeShop(){document.getElementById("shopMenu").style.display="none";}
+function buySkin(name,cost){ if(save.coins<cost)return alert("Not enough coins!"); save.coins-=cost; save.skins.push(name); saveGame(); updateCoins(); alert("Skin unlocked!"); }
+function buyWeapon(name,cost){ if(save.coins<cost)return alert("Not enough coins!"); save.coins-=cost; save.weapons.push(name); saveGame(); updateCoins(); alert("Weapon unlocked!"); }
+function buyPower(name,cost){ if(save.coins<cost)return alert("Not enough coins!"); save.coins-=cost; save.powers.push(name); saveGame(); updateCoins(); alert("Power unlocked!"); }
+function updateCoins(){document.getElementById("coinsText").textContent=save.coins;}
+function openAdminPrompt(){ let pass=prompt("Enter admin password"); if(pass==="admin123"){document.getElementById("adminMenu").style.display="block";} else{alert("Wrong password!");} }
+function closeAdmin(){document.getElementById("adminMenu").style.display="none";}
+function addCoins(a){save.coins+=a; saveGame(); updateCoins();}
+function unlockAllSkins(){save.skins=["ninja","gold","default"]; saveGame(); alert("All skins unlocked!");}
+function unlockAllItems(){save.weapons=["sword","axe"]; save.powers=["speed","damage"]; saveGame(); alert("All items unlocked!");}
+let player=document.getElementById("player"); let enemy=document.getElementById("enemy");
+player.style.left="100px"; enemy.style.left="600px";
+document.addEventListener("keydown", function(e){ let pos=parseInt(player.style.left); if(e.key==="ArrowRight") player.style.left=(pos+20)+"px"; if(e.key==="ArrowLeft") player.style.left=(pos-20)+"px"; if(e.key===" ") attack(); });
+setInterval(function(){ let p=parseInt(player.style.left); let e=parseInt(enemy.style.left); if(e>p) enemy.style.left=(e-5)+"px"; if(e<p) enemy.style.left=(e+5)+"px"; if(Math.abs(e-p)<40) death(); },50);
+function attack(){ let p=parseInt(player.style.left); let e=parseInt(enemy.style.left); if(Math.abs(e-p)<60) killEnemy(); }
+function killEnemy(){ alert("Enemy defeated! +10 coins"); save.coins+=10; updateCoins(); saveGame(); enemy.style.left="600px"; }
+function death(){ alert("You died!"); player.style.left="100px"; enemy.style.left="600px"; }
+</script>
+
+</body>
+</html>
